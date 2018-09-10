@@ -66,6 +66,10 @@ def getCh():
 		
 	return ch
 
+def changeSpeed(speed):
+	STEPS = speed;
+	print STEPS
+
 
 def checkKey():
 	global bright
@@ -94,10 +98,42 @@ def checkKey():
 			
 			bright = bright - 1
 			print ("Current brightness: %d" % bright)
+
+		if c == '1':
+			state = False
+			changeSpeed(.05)
+			state = True
+			print ("Speed Setting 1: Very Slow")
+
+		if c == '2':
+			state = False
+			changeSpeed(.1)
+			state = True
+			print ("Speed Setting 2: Slow")
+
+		if c == '3':
+			state = False
+			changeSpeed(.25)
+			state = True
+			print ("Speed Setting 3: Medium")
+
+		if c == '4':
+			state = False
+			changeSpeed(1)
+			state = True
+			print ("Speed Setting 4: Fast")
+
+		if c == '5':
+			state = False
+			changeSpeed(5)
+			state = True
+			print ("Speed Setting 5: Very Fast")
+
+
 			
 		if c == 'p' and state:
 			state = False
-			print ("Pausing...")
+			print ("Pausing... you bitch")
 			
 			time.sleep(0.1)
 			
@@ -132,7 +168,9 @@ start_new_thread(checkKey, ())
 print ("+ / - = Increase / Decrease brightness")
 print ("p / s / r = Pause Completely / Stop on Color / Resume")
 print ("f = flash lights / d to go back to dimming fade")
+print ("1 / 2 / 3 / 4 / 5 for different speeds")
 print ("c = Abort Program")
+
 
 
 setLights(RED_PIN, r)
