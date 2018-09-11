@@ -10,7 +10,6 @@ BLUE_PIN  = 24
 
 # Number of color changes per step (more is faster, less is slower).
 # You also can use 0.X floats.
-STEPS     = .25
 
 ###### END ######
 
@@ -29,12 +28,15 @@ g = 0.0
 b = 0.0
 
 brightChanged = False
+speedChanged = False
 abort = False
 state = True
 flash = False
 paused = False
 count = 0
 flashlevel = 50
+
+steps     = 3
 
 
 pi = pigpio.pi()
@@ -66,14 +68,10 @@ def getCh():
 		
 	return ch
 
-def changeSpeed(speed):
-	STEPS = speed;
-	print STEPS
-
-
 def checkKey():
 	global bright
 	global brightChanged
+	global speedChanged
 	global state
 	global flash
 	global abort
@@ -99,41 +97,71 @@ def checkKey():
 			bright = bright - 1
 			print ("Current brightness: %d" % bright)
 
-		if c == '1':
-			state = False
-			changeSpeed(.05)
-			state = True
+		if c == '1' and not speedChanged:
+			speedChanged = True
+			time.sleep(0.01)
+			speedChanged = False
+
+			steps = .05
+			print steps
+			
 			print ("Speed Setting 1: Very Slow")
 
-		if c == '2':
-			state = False
-			changeSpeed(.1)
-			state = True
+		if c == '2' and not speedChanged:
+			speedChanged = True
+			time.sleep(0.01)
+			speedChanged = False
+			
+			steps = .1
+			print steps
+			
 			print ("Speed Setting 2: Slow")
 
-		if c == '3':
-			state = False
-			changeSpeed(.25)
-			state = True
+		if c == '3' and not speedChanged:
+			speedChanged = True
+			time.sleep(0.01)
+			speedChanged = False
+			
+			steps = .25
+			print steps
+			
 			print ("Speed Setting 3: Medium")
 
-		if c == '4':
-			state = False
-			changeSpeed(1)
-			state = True
-			print ("Speed Setting 4: Fast")
+		if c == '4' and not speedChanged:
+			speedChanged = True
+			time.sleep(0.01)
+			speedChanged = False
+			
+			steps = 1
+			print steps
+			
+			print ("Speed Setting 4: Slightly Faster Medium")
 
-		if c == '5':
-			state = False
-			changeSpeed(5)
-			state = True
-			print ("Speed Setting 5: Very Fast")
+		if c == '5' and not speedChanged:
+			speedChanged = True
+			time.sleep(0.01)
+			speedChanged = False
+			
+			steps = 1.5
+			print steps
+			
+			print ("Speed Setting 5: Fast")
 
+		if c == '6' and not speedChanged:
+			speedChanged = True
+			time.sleep(0.01)
+			speedChanged = False
+			
+			steps = 3
+			print steps
+			
+			print ("Speed Setting 6: Very Fast")
 
 			
 		if c == 'p' and state:
 			state = False
-			print ("Pausing... you bitch")
+			time.sleep(0.1)
+			print ("Pausing... y")
 			
 			time.sleep(0.1)
 			
@@ -168,7 +196,7 @@ start_new_thread(checkKey, ())
 print ("+ / - = Increase / Decrease brightness")
 print ("p / s / r = Pause Completely / Stop on Color / Resume")
 print ("f = flash lights / d to go back to dimming fade")
-print ("1 / 2 / 3 / 4 / 5 for different speeds")
+print ("1 / 2 / 3 / 4 / 5 / 6 for different speeds")
 print ("c = Abort Program")
 
 
@@ -180,67 +208,67 @@ setLights(BLUE_PIN, b)
 
 while abort == False:
         count = count + count
-	if state and not brightChanged and not flash:
+	if state and not brightChanged and not speedChanged and not flash:
 		if r == 255 and b == 0 and g < 255:
                         
-			g = updateColor(g, STEPS)
+			g = updateColor(g, steps)
 			setLights(GREEN_PIN, g)
 		
 		elif g == 255 and b == 0 and r > 0:
-			r = updateColor(r, -STEPS)
+			r = updateColor(r, -steps)
 			setLights(RED_PIN, r)
 		
 		elif r == 0 and g == 255 and b < 255:
-			b = updateColor(b, STEPS)
+			b = updateColor(b, steps)
 			setLights(BLUE_PIN, b)
 		
 		elif r == 0 and b == 255 and g > 0:
-			g = updateColor(g, -STEPS)
+			g = updateColor(g, -steps)
 			setLights(GREEN_PIN, g)
 
 		elif g == 0 and b == 255 and r < 255:
-			r = updateColor(r, STEPS)
+			r = updateColor(r, steps)
 			setLights(RED_PIN, r)
 		
 		elif r == 255 and g == 0 and b > 0:
-			b = updateColor(b, -STEPS)
+			b = updateColor(b, -steps)
 			setLights(BLUE_PIN, b)
 
-	if state and not brightChanged and flash:
+	if state and not brightChanged and not speedChanged and flash:
 		if r == 255 and b == 0 and g < 255:
                         
-			g = updateColor(g, STEPS)
+			g = updateColor(g, steps)
 			if(count % flashlevel == 0):
                                 setLights(GREEN_PIN, 0)
    
 			setLights(GREEN_PIN, g)
 		
 		elif g == 255 and b == 0 and r > 0:
-			r = updateColor(r, -STEPS)
+			r = updateColor(r, -steps)
 			if(count % flashlevel == 0):
                                 setLights(RED_PIN, 0)
 			setLights(RED_PIN, r)
 		
 		elif r == 0 and g == 255 and b < 255:
-			b = updateColor(b, STEPS)
+			b = updateColor(b, steps)
 			if(count % flashlevel == 0):
                                 setLights(BLUE_PIN, 0)
 			setLights(BLUE_PIN, b)
 		
 		elif r == 0 and b == 255 and g > 0:
-			g = updateColor(g, -STEPS)
+			g = updateColor(g, -steps)
 			if(count % flashlevel == 0):
                                 setLights(GREEN_PIN, 0)
 			setLights(GREEN_PIN, g)
 
 		elif g == 0 and b == 255 and r < 255:
-			r = updateColor(r, STEPS)
+			r = updateColor(r, steps)
 			if(count % flashlevel == 0):
                                 setLights(RED_PIN, 0)
 			setLights(RED_PIN, r)
 		
 		elif r == 255 and g == 0 and b > 0:
-			b = updateColor(b, -STEPS)
+			b = updateColor(b, -steps)
 			if(count % flashlevel == 0):
                                 setLights(BLUE_PIN, 0)
 			setLights(BLUE_PIN, b)
